@@ -175,51 +175,51 @@
     <!-- Viewer — full-screen overlay, no ads -->
     <section id="viewerSection" class="hidden fixed inset-0 z-50 bg-gray-50 dark:bg-gray-900 flex flex-col">
 
-      <!-- Top bar: back + file info + search + actions + dark mode -->
-      <div class="flex-shrink-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-3 py-2 flex items-center gap-2 flex-wrap">
+      <!-- Top bar: gradient background -->
+      <div class="flex-shrink-0 bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 px-3 py-2 flex items-center gap-2 flex-wrap shadow-md">
 
         <!-- Back -->
-        <button id="loadNew" class="flex items-center gap-1 text-sm text-indigo-600 dark:text-indigo-400 hover:underline flex-shrink-0">
+        <button id="loadNew" class="flex items-center gap-1 text-sm text-white hover:text-indigo-200 font-medium flex-shrink-0 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
           Back
         </button>
-        <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 flex-shrink-0"></div>
+        <div class="w-px h-4 bg-white/30 flex-shrink-0"></div>
 
         <!-- File info -->
-        <span class="flex items-center gap-1 font-medium text-sm text-gray-800 dark:text-gray-200 truncate max-w-40">
-          <svg class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <span class="flex items-center gap-1 font-semibold text-sm text-white truncate max-w-40">
+          <svg class="w-3.5 h-3.5 text-indigo-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
           <span id="metaName" class="truncate"></span>
         </span>
-        <span class="text-xs text-gray-400 flex-shrink-0" id="metaSize"></span>
-        <span class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
-          <span id="metaRows" class="font-semibold text-gray-700 dark:text-gray-200"></span> rows ·
-          <span id="metaCols" class="font-semibold text-gray-700 dark:text-gray-200"></span> cols
+        <span class="text-xs text-indigo-200 flex-shrink-0" id="metaSize"></span>
+        <span class="text-xs text-indigo-200 flex-shrink-0">
+          <span id="metaRows" class="font-bold text-white"></span> rows ·
+          <span id="metaCols" class="font-bold text-white"></span> cols
         </span>
-        <span class="text-xs text-gray-400 hidden md:inline flex-shrink-0">
-          Delimiter: <code id="metaDelim" class="bg-gray-100 dark:bg-gray-700 px-1 py-0.5 rounded font-mono text-xs"></code>
+        <span class="text-xs text-indigo-200 hidden md:inline flex-shrink-0">
+          Delim: <code id="metaDelim" class="bg-white/15 px-1 py-0.5 rounded font-mono text-xs text-white"></code>
         </span>
-        <label class="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 cursor-pointer select-none flex-shrink-0">
-          <input type="checkbox" id="hasHeadersMeta" checked class="rounded cursor-pointer accent-indigo-600">
+        <label class="flex items-center gap-1 text-xs text-indigo-200 cursor-pointer select-none flex-shrink-0">
+          <input type="checkbox" id="hasHeadersMeta" checked class="rounded cursor-pointer accent-violet-400">
           Has headers
         </label>
-        <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 flex-shrink-0"></div>
+        <div class="w-px h-4 bg-white/30 flex-shrink-0"></div>
 
         <!-- Search -->
         <div class="relative flex-1 min-w-40">
-          <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-indigo-300 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
           </svg>
           <input id="searchInput" type="text" placeholder="Search…"
-            class="w-full pl-8 pr-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 dark:text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            class="w-full pl-8 pr-3 py-1.5 text-sm border border-white/30 rounded-lg bg-white/15 text-white placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/25">
         </div>
 
         <!-- Columns toggle -->
         <div class="relative flex-shrink-0">
-          <button id="colVisBtn" class="text-xs px-2.5 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-1 transition-colors">
+          <button id="colVisBtn" class="text-xs px-2.5 py-1.5 border border-white/30 rounded-lg bg-white/10 text-white hover:bg-white/20 flex items-center gap-1 transition-colors">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -230,28 +230,28 @@
         </div>
 
         <!-- Export CSV -->
-        <button id="btnExportCSV" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-1 transition-colors">
+        <button id="btnExportCSV" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg flex items-center gap-1 transition-colors shadow-sm">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           CSV
         </button>
 
         <!-- Export JSON -->
-        <button id="btnExportJSON" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg flex items-center gap-1 transition-colors">
+        <button id="btnExportJSON" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-sky-500 hover:bg-sky-400 text-white rounded-lg flex items-center gap-1 transition-colors shadow-sm">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
           JSON
         </button>
 
         <!-- Copy -->
-        <button id="btnCopy" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-violet-600 hover:bg-violet-700 text-white rounded-lg flex items-center gap-1 transition-colors">
+        <button id="btnCopy" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg flex items-center gap-1 transition-colors">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
           Copy
           <span id="copyBadge" class="hidden bg-white/30 text-white text-xs px-1.5 rounded-full leading-none"></span>
         </button>
 
-        <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 flex-shrink-0"></div>
+        <div class="w-px h-4 bg-white/30 flex-shrink-0"></div>
 
         <!-- Dark mode -->
-        <button id="darkToggle2" title="Toggle dark mode" class="flex-shrink-0 p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+        <button id="darkToggle2" title="Toggle dark mode" class="flex-shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
           <svg id="iconSun2" class="w-4 h-4 text-yellow-400 hidden" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
           </svg>
@@ -262,7 +262,7 @@
       </div>
 
       <!-- Thin status bar: row count + selection + clear filters -->
-      <div class="flex-shrink-0 flex items-center justify-between px-3 py-1 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400">
+      <div class="flex-shrink-0 flex items-center justify-between px-3 py-1 bg-indigo-50 dark:bg-indigo-950/40 border-b border-indigo-100 dark:border-indigo-900 text-xs text-indigo-600 dark:text-indigo-400">
         <div class="flex items-center gap-3">
           <span id="pageInfo"></span>
           <span id="resultsSummary"></span>
@@ -522,16 +522,16 @@ function buildColSearchRow() {
 
   // Empty cell for checkbox column
   const emptyTh = document.createElement('th');
-  emptyTh.className = 'px-2 py-1 bg-white dark:bg-gray-800';
+  emptyTh.className = 'px-2 py-1.5 bg-violet-50 dark:bg-violet-950/30';
   row.appendChild(emptyTh);
   const seqTh3 = document.createElement('th');
-  seqTh3.className = 'px-2 py-1 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 w-10';
+  seqTh3.className = 'px-2 py-1.5 bg-violet-50 dark:bg-violet-950/30 border-r border-violet-100 dark:border-violet-900 w-10';
   row.appendChild(seqTh3);
 
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
     const th = document.createElement('th');
-    th.className = 'px-2 py-1 bg-white dark:bg-gray-800';
+    th.className = 'px-2 py-1.5 bg-violet-50 dark:bg-violet-950/30';
 
     const inp = document.createElement('input');
     inp.type = 'text';
@@ -651,7 +651,7 @@ function renderHead() {
 
   // Select-all checkbox column
   const cbTh = document.createElement('th');
-  cbTh.className = 'px-3 py-3 bg-gray-50 dark:bg-gray-900 w-10 text-center';
+  cbTh.className = 'px-3 py-3 bg-indigo-700 dark:bg-indigo-900 w-10 text-center';
   const selectAll = document.createElement('input');
   selectAll.type = 'checkbox';
   selectAll.id = 'selectAllCb';
@@ -666,7 +666,7 @@ function renderHead() {
 
   // Sequence number column
   const seqTh = document.createElement('th');
-  seqTh.className = 'px-2 py-3 text-center text-xs font-semibold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-900 w-10 border-r border-gray-200 dark:border-gray-700';
+  seqTh.className = 'px-2 py-3 text-center text-xs font-semibold text-indigo-300 bg-indigo-700 dark:bg-indigo-900 w-10 border-r border-indigo-600 dark:border-indigo-800';
   seqTh.textContent = '#';
   tr.appendChild(seqTh);
 
@@ -674,11 +674,11 @@ function renderHead() {
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
     const th = document.createElement('th');
-    th.className = 'px-3 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 whitespace-nowrap';
+    th.className = 'px-3 py-3 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider bg-indigo-700 dark:bg-indigo-900 cursor-pointer hover:bg-indigo-600 dark:hover:bg-indigo-800 whitespace-nowrap';
     if (S.colWidths[i]) th.style.minWidth = S.colWidths[i] + 'px';
     else th.style.minWidth = '80px';
     let arrow = '⇅';
-    if (S.sortCol === i) { arrow = S.sortDir === 'asc' ? '↑' : '↓'; th.classList.add('text-indigo-600'); }
+    if (S.sortCol === i) { arrow = S.sortDir === 'asc' ? '↑' : '↓'; th.classList.add('text-yellow-300'); }
     th.innerHTML = `<span class="inline-block truncate align-middle max-w-xs">${esc(h || `Col ${i + 1}`)}</span><span class="ml-1 text-gray-300 dark:text-gray-600 text-xs">${arrow}</span>`;
     th.addEventListener('click', e => {
       if (e.target.classList.contains('resize-handle')) return;
@@ -702,16 +702,16 @@ function buildColFilterDropdowns() {
   filterRow.innerHTML = '';
 
   const emptyTh = document.createElement('th');
-  emptyTh.className = 'px-2 py-1 bg-gray-50 dark:bg-gray-900';
+  emptyTh.className = 'px-2 py-1.5 bg-indigo-50 dark:bg-indigo-950/50';
   filterRow.appendChild(emptyTh);
   const seqTh2 = document.createElement('th');
-  seqTh2.className = 'px-2 py-1 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-10';
+  seqTh2.className = 'px-2 py-1.5 bg-indigo-50 dark:bg-indigo-950/50 border-r border-indigo-100 dark:border-indigo-900 w-10';
   filterRow.appendChild(seqTh2);
 
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
     const th = document.createElement('th');
-    th.className = 'px-2 py-1 bg-gray-50 dark:bg-gray-900';
+    th.className = 'px-2 py-1.5 bg-indigo-50 dark:bg-indigo-950/50';
 
     const sel = document.createElement('select');
     sel.className = 'w-full text-xs border border-gray-200 dark:border-gray-600 rounded px-1.5 py-1 bg-white dark:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-400 min-w-0';
@@ -829,7 +829,10 @@ function renderVisibleRows() {
 function createRow(row, idx) {
   const sel = S.selected.has(row.__rowId);
   const tr = document.createElement('tr');
-  tr.className = sel ? 'row-selected' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors';
+  const evenRow = idx % 2 === 0;
+  tr.className = sel ? 'row-selected' :
+    (evenRow ? 'bg-white dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors'
+             : 'bg-indigo-50/40 dark:bg-indigo-950/20 hover:bg-indigo-100/60 dark:hover:bg-indigo-900/30 transition-colors');
 
   // Checkbox
   const cbTd = document.createElement('td');
@@ -845,7 +848,7 @@ function createRow(row, idx) {
 
   // Sequence number
   const seqTd = document.createElement('td');
-  seqTd.className = 'px-2 py-2 text-xs text-gray-400 dark:text-gray-500 text-right select-none w-10 border-r border-gray-100 dark:border-gray-700';
+  seqTd.className = 'px-2 py-2 text-xs text-indigo-400 dark:text-indigo-500 text-right select-none w-10 border-r border-indigo-100 dark:border-indigo-900/50 font-medium';
   seqTd.textContent = idx + 1;
   tr.appendChild(seqTd);
 
