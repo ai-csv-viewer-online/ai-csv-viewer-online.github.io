@@ -81,6 +81,8 @@
     .dark #theadSearch th { border-right-color: #3b0764; }
     .row-selected { background-color: #eef2ff !important; }
     .dark .row-selected { background-color: rgba(99,102,241,0.15) !important; }
+    #seqActionCell { background-color: #ffffff !important; border-right: 1px solid #e2e8f0; }
+    .dark #seqActionCell { background-color: #1f2937 !important; border-right-color: #374151; }
   </style>
 </head>
 <body class="bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-900 dark:text-gray-100 min-h-screen">
@@ -182,80 +184,82 @@
     <!-- Viewer — full-screen overlay, no ads -->
     <section id="viewerSection" class="hidden fixed inset-0 z-50 bg-gray-50 dark:bg-gray-900 flex flex-col">
 
-      <!-- Top bar: gradient background -->
-      <div class="flex-shrink-0 bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 px-3 py-2 flex items-center gap-2 flex-wrap shadow-md">
+      <!-- Single combined toolbar — no gradient, all info + buttons in one bar -->
+      <div class="flex-shrink-0 flex items-center gap-2 px-3 py-2 bg-white dark:bg-gray-800 border-b-2 border-indigo-200 dark:border-indigo-800 flex-wrap">
 
         <!-- Back -->
-        <button id="loadNew" class="flex items-center gap-1 text-sm text-white hover:text-indigo-200 font-medium flex-shrink-0 transition-colors">
+        <button id="loadNew" class="flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 flex-shrink-0 transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
           </svg>
           Back
         </button>
-        <div class="w-px h-4 bg-white/30 flex-shrink-0"></div>
+        <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 flex-shrink-0"></div>
 
-        <!-- File info -->
-        <span class="flex items-center gap-1 font-semibold text-sm text-white truncate max-w-40">
-          <svg class="w-3.5 h-3.5 text-indigo-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- File name -->
+        <span class="flex items-center gap-1 font-semibold text-sm text-gray-800 dark:text-gray-200 truncate max-w-48 flex-shrink-0">
+          <svg class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
           </svg>
           <span id="metaName" class="truncate"></span>
         </span>
-        <span class="text-xs text-indigo-200 flex-shrink-0" id="metaSize"></span>
-        <span class="text-xs text-indigo-200 flex-shrink-0">
-          <span id="metaRows" class="font-bold text-white"></span> rows ·
-          <span id="metaCols" class="font-bold text-white"></span> cols
-        </span>
-        <span class="text-xs text-indigo-200 hidden md:inline flex-shrink-0">
-          Delim: <code id="metaDelim" class="bg-white/15 px-1 py-0.5 rounded font-mono text-xs text-white"></code>
-        </span>
-        <span id="metaHeadersBadge" class="hidden md:inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0"></span>
-        <div class="w-px h-4 bg-white/30 flex-shrink-0"></div>
 
-        <!-- Search -->
-        <div class="relative flex-1 min-w-40">
-          <svg class="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-indigo-300 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-          </svg>
-          <input id="searchInput" type="text" placeholder="Search…"
-            class="w-full pl-8 pr-3 py-1.5 text-sm border border-white/30 rounded-lg bg-white/15 text-white placeholder-indigo-300 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-white/25">
-        </div>
+        <!-- Rows / cols + filtered count -->
+        <span class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">
+          <span id="metaRows" class="font-semibold text-indigo-600 dark:text-indigo-400"></span> rows ·
+          <span id="metaCols" class="font-semibold text-gray-600 dark:text-gray-300"></span> cols
+        </span>
 
-        <!-- Columns toggle -->
-        <div class="relative flex-shrink-0">
-          <button id="colVisBtn" class="text-xs px-2.5 py-1.5 border border-white/30 rounded-lg bg-white/10 text-white hover:bg-white/20 flex items-center gap-1 transition-colors">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-            </svg>
-            Columns
+        <!-- Filtered count — only shows when filters are active -->
+        <span id="resultsSummary" class="hidden text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 px-2 py-0.5 rounded-full font-medium flex-shrink-0"></span>
+
+        <!-- Selection badge -->
+        <span id="selectionBar" class="hidden items-center gap-1 text-xs bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300 px-2 py-0.5 rounded-full font-medium flex-shrink-0">
+          <span id="selCount"></span> selected
+          <button id="btnClearSel" class="hover:underline ml-0.5">✕</button>
+        </span>
+
+        <!-- Push buttons to the right -->
+        <span class="flex-1 min-w-0"></span>
+
+        <!-- Hidden JS compatibility elements -->
+        <span class="hidden" id="metaSize"></span>
+        <span class="hidden" id="metaDelim"></span>
+        <span class="hidden" id="metaHeadersBadge"></span>
+        <span class="hidden" id="pageInfo"></span>
+        <input id="searchInput" type="text" class="hidden" style="display:none">
+
+        <!-- Action buttons -->
+        <div class="flex items-center gap-1.5">
+          <div class="relative">
+            <button id="colVisBtn" class="text-xs px-2.5 py-1 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 flex items-center gap-1 transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+              Columns
+            </button>
+            <div id="colVisMenu" class="hidden absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 min-w-48 max-h-72 overflow-y-auto p-2"></div>
+          </div>
+          <button id="btnExportCSV" class="text-xs px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg flex items-center gap-1 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            CSV
           </button>
-          <div id="colVisMenu" class="hidden absolute right-0 top-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl z-50 min-w-48 max-h-72 overflow-y-auto p-2"></div>
+          <button id="btnExportJSON" class="text-xs px-2.5 py-1 bg-sky-600 hover:bg-sky-700 text-white rounded-lg flex items-center gap-1 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+            JSON
+          </button>
+          <button id="btnCopy" class="text-xs px-2.5 py-1 bg-violet-600 hover:bg-violet-700 text-white rounded-lg flex items-center gap-1 transition-colors">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+            Copy
+            <span id="copyBadge" class="hidden bg-white/30 text-white text-xs px-1.5 rounded-full leading-none"></span>
+          </button>
+          <button id="btnClearFilters" class="hidden text-xs px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 rounded-lg transition-colors">
+            Clear filters
+          </button>
         </div>
 
-        <!-- Export CSV -->
-        <button id="btnExportCSV" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-white rounded-lg flex items-center gap-1 transition-colors shadow-sm">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          CSV
-        </button>
+        <div class="w-px h-4 bg-gray-200 dark:bg-gray-600 flex-shrink-0"></div>
 
-        <!-- Export JSON -->
-        <button id="btnExportJSON" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-sky-500 hover:bg-sky-400 text-white rounded-lg flex items-center gap-1 transition-colors shadow-sm">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-          JSON
-        </button>
-
-        <!-- Copy -->
-        <button id="btnCopy" class="flex-shrink-0 text-xs px-2.5 py-1.5 bg-white/20 hover:bg-white/30 text-white border border-white/30 rounded-lg flex items-center gap-1 transition-colors">
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
-          Copy
-          <span id="copyBadge" class="hidden bg-white/30 text-white text-xs px-1.5 rounded-full leading-none"></span>
-        </button>
-
-        <div class="w-px h-4 bg-white/30 flex-shrink-0"></div>
-
-        <!-- Dark mode -->
-        <button id="darkToggle2" title="Toggle dark mode" class="flex-shrink-0 p-1.5 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
+        <!-- Dark mode toggle -->
+        <button id="darkToggle2" title="Toggle dark mode" class="flex-shrink-0 p-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
           <svg id="iconSun2" class="w-4 h-4 text-yellow-400 hidden" fill="currentColor" viewBox="0 0 20 20">
             <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/>
           </svg>
@@ -263,20 +267,8 @@
             <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"/>
           </svg>
         </button>
-      </div>
 
-      <!-- Thin status bar: row count + selection + clear filters -->
-      <div class="flex-shrink-0 flex items-center justify-between px-3 py-1 bg-indigo-50 dark:bg-indigo-950/40 border-b border-indigo-100 dark:border-indigo-900 text-xs text-indigo-600 dark:text-indigo-400">
-        <div class="flex items-center gap-3">
-          <span id="pageInfo"></span>
-          <span id="resultsSummary"></span>
-          <span id="selectionBar" class="hidden items-center gap-1 text-indigo-600 dark:text-indigo-400 font-medium">
-            · <span id="selCount"></span> selected
-            <button id="btnClearSel" class="text-gray-400 hover:underline ml-1">Clear</button>
-          </span>
-        </div>
-        <button id="btnClearFilters" class="hidden text-indigo-600 dark:text-indigo-400 hover:underline">Clear filters</button>
-      </div>
+      </div><!-- end combined toolbar -->
 
       <!-- Hidden rppSelect kept for JS compatibility -->
       <select id="rppSelect" class="hidden"></select>
@@ -382,6 +374,9 @@ function toggleDark() {
   html.classList.toggle('dark');
   localStorage.setItem('darkMode', html.classList.contains('dark') ? '1' : '0');
   syncDarkIcons();
+  // Re-apply inline bg on # cell when dark mode changes
+  const seqCell = document.getElementById('seqActionCell');
+  if (seqCell) seqCell.style.backgroundColor = html.classList.contains('dark') ? '#1f2937' : '#ffffff';
 }
 document.getElementById('darkToggle').addEventListener('click', toggleDark);
 document.getElementById('darkToggle2').addEventListener('click', toggleDark);
@@ -492,7 +487,7 @@ function parseFile(file) {
 
       S.fileInfo.delim = delimLabel(res.meta.delimiter);
       S.hiddenCols = new Set(); S.colFilters = {}; S.colTextFilters = {};
-      S.query = ''; S.sortCol = -1; S.sortDir = null;
+      S.sortCol = -1; S.sortDir = null;
       S.page = 1; S.colWidths = {};
       S.selected = new Set();
       document.getElementById('searchInput').value = '';
@@ -522,14 +517,6 @@ function initViewer() {
   document.getElementById('metaRows').textContent = S.allRows.length.toLocaleString();
   document.getElementById('metaCols').textContent = S.headers.length;
   document.getElementById('metaDelim').textContent = S.fileInfo.delim;
-  const badge = document.getElementById('metaHeadersBadge');
-  if (S.fileInfo.hasHeaders) {
-    badge.textContent = '✓ Headers detected';
-    badge.className = 'hidden md:inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 bg-emerald-500/30 text-emerald-200';
-  } else {
-    badge.textContent = '⚠ No headers — auto-named';
-    badge.className = 'hidden md:inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 bg-amber-500/30 text-amber-200';
-  }
   buildColVisMenu();
   cacheUniqueValues();
   pipeline();
@@ -607,26 +594,20 @@ function buildColSearchRow() {
   });
 }
 
-// ── Search ────────────────────────────────────────────────────────────────────
-let searchTimer;
-document.getElementById('searchInput').addEventListener('input', e => {
-  clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => { S.query = e.target.value.toLowerCase(); S.page = 1; pipeline(); updateClearBtn(); }, 180);
-});
+// Global search removed — use per-column search rows in thead
 
 // ── Rows per page ─────────────────────────────────────────────────────────────
 document.getElementById('rppSelect').addEventListener('change', e => { S.rpp = +e.target.value; S.page = 1; render(); });
 
 // ── Clear filters ─────────────────────────────────────────────────────────────
 document.getElementById('btnClearFilters').addEventListener('click', () => {
-  S.query = ''; S.colFilters = {}; S.colTextFilters = {};
-  document.getElementById('searchInput').value = '';
+  S.colFilters = {}; S.colTextFilters = {};
   document.querySelectorAll('#theadFilters select').forEach(s => s.value = '');
   document.querySelectorAll('#theadSearch input').forEach(inp => inp.value = '');
   S.page = 1; pipeline(); updateClearBtn();
 });
 function updateClearBtn() {
-  document.getElementById('btnClearFilters').classList.toggle('hidden', !S.query && !Object.keys(S.colFilters).length);
+  document.getElementById('btnClearFilters').classList.toggle('hidden', !Object.keys(S.colFilters).length && !Object.keys(S.colTextFilters).length);
 }
 
 // ── Row selection ─────────────────────────────────────────────────────────────
@@ -670,10 +651,6 @@ document.getElementById('btnClearSel').addEventListener('click', () => {
 // ── Filter → Sort pipeline ────────────────────────────────────────────────────
 function pipeline() {
   let rows = S.allRows;
-  if (S.query) {
-    const q = S.query;
-    rows = rows.filter(row => S.headers.some(h => (row[h] || '').toLowerCase().includes(q)));
-  }
   const fe = Object.entries(S.colFilters);
   if (fe.length) rows = rows.filter(row => fe.every(([ci, val]) => String(row[S.headers[+ci]] || '') === val));
 
@@ -717,7 +694,7 @@ function renderHead() {
   cbTh.appendChild(selectAll);
   tr.appendChild(cbTh);
 
-  // Sequence number column
+  // Sequence number column header
   const seqTh = document.createElement('th');
   seqTh.className = 'px-2 py-3 text-center text-xs font-semibold text-indigo-300 bg-indigo-700 dark:bg-indigo-900 w-10 border-r border-indigo-600 dark:border-indigo-800';
   seqTh.textContent = '#';
@@ -926,9 +903,13 @@ function renderPagination() {
 
 function renderSummary() {
   const t = S.allRows.length, f = S.filteredRows.length;
-  document.getElementById('resultsSummary').textContent = t === f
-    ? `${t.toLocaleString()} rows`
-    : `${f.toLocaleString()} of ${t.toLocaleString()} rows (filtered)`;
+  const el = document.getElementById('resultsSummary');
+  if (t === f) {
+    el.classList.add('hidden'); el.classList.remove('inline-flex');
+  } else {
+    el.textContent = `${f.toLocaleString()} / ${t.toLocaleString()} filtered`;
+    el.classList.remove('hidden'); el.classList.add('inline-flex');
+  }
 }
 
 // ── Export ────────────────────────────────────────────────────────────────────
