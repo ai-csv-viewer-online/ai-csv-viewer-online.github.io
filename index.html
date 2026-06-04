@@ -79,6 +79,11 @@
     #theadSearch th { border-right: 1px solid #ddd6fe; }
     #theadSearch th:last-child { border-right: none; }
     .dark #theadSearch th { border-right-color: #3b0764; }
+    /* Hide all ads when viewer is active */
+    body.viewer-active iframe,
+    body.viewer-active [id*="push"],
+    body.viewer-active [class*="push-notif"],
+    body.viewer-active [class*="monetag"] { display: none !important; visibility: hidden !important; }
     .row-selected { background-color: #eef2ff !important; }
     .dark .row-selected { background-color: rgba(99,102,241,0.15) !important; }
     #seqActionCell { background-color: #ffffff !important; border-right: 1px solid #e2e8f0; }
@@ -446,6 +451,8 @@ document.getElementById('loadNew').addEventListener('click', () => {
   document.getElementById('viewerSection').classList.add('hidden');
   document.getElementById('uploadSection').classList.remove('hidden');
   document.querySelector('header').style.display = '';
+  document.body.classList.remove('viewer-active');
+  showAllAds();
   fileInput.value = '';
   S.selected.clear();
 });
@@ -510,10 +517,43 @@ function fmtBytes(b) {
 }
 
 // ── Init viewer ───────────────────────────────────────────────────────────────
+function hideAllAds() {
+  // Hide all ad iframes and any fixed/absolute elements injected by ad scripts
+  document.querySelectorAll('iframe, [id*="push"], [class*="push"], [id*="ad"], [class*="notif"]').forEach(el => {
+    if (!el.closest('#viewerSection') && !el.closest('#loadingOverlay')) {
+      el.dataset.adHidden = '1';
+      el.style.setProperty('display', 'none', 'important');
+      el.style.setProperty('visibility', 'hidden', 'important');
+    }
+  });
+  // Also hide any fixed-position elements added by ad scripts (Monetag In-Page Push etc.)
+  document.querySelectorAll('body > div, body > aside').forEach(el => {
+    if (el.id && (el.id.startsWith('monetag') || el.id.startsWith('push') || el.id.startsWith('adsterra'))) {
+      el.dataset.adHidden = '1';
+      el.style.setProperty('display', 'none', 'important');
+    }
+    const cs = window.getComputedStyle(el);
+    if ((cs.position === 'fixed' || cs.position === 'absolute') && !el.id && !el.classList.length) {
+      el.dataset.adHidden = '1';
+      el.style.setProperty('display', 'none', 'important');
+    }
+  });
+}
+
+function showAllAds() {
+  document.querySelectorAll('[data-ad-hidden="1"]').forEach(el => {
+    el.style.removeProperty('display');
+    el.style.removeProperty('visibility');
+    delete el.dataset.adHidden;
+  });
+}
+
 function initViewer() {
   document.getElementById('uploadSection').classList.add('hidden');
   document.getElementById('viewerSection').classList.remove('hidden');
   document.querySelector('header').style.display = 'none';
+  document.body.classList.add('viewer-active');
+  hideAllAds();
   document.getElementById('metaName').textContent = S.fileInfo.name;
   document.getElementById('metaSize').textContent = S.fileInfo.size;
   document.getElementById('metaRows').textContent = S.allRows.length.toLocaleString();
