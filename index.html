@@ -30,7 +30,9 @@
       scrollbar-color: #94a3b8 #f1f5f9;
     }
     .dark .table-container { scrollbar-color: #64748b #1e293b; }
-    thead th { position: sticky; top: 0; z-index: 10; }
+    #theadRow th     { position: sticky; top: 0px;  z-index: 10; }
+    #theadFilters th { position: sticky; top: 42px; z-index: 9;  }
+    #theadSearch th  { position: sticky; top: 76px; z-index: 8;  }
     th { position: relative; user-select: none; }
     .resize-handle {
       position: absolute; right: 0; top: 0;
@@ -281,7 +283,8 @@
           <table class="min-w-full text-sm">
             <thead class="bg-gray-50 dark:bg-gray-900">
               <tr id="theadRow" class="border-b border-gray-200 dark:border-gray-700"></tr>
-              <tr id="theadFilters" class="border-b-2 border-indigo-100 dark:border-indigo-900"></tr>
+              <tr id="theadFilters" class="border-b border-gray-100 dark:border-gray-800"></tr>
+              <tr id="theadSearch" class="border-b-2 border-indigo-100 dark:border-indigo-900"></tr>
             </thead>
             <tbody id="tbody" class="divide-y divide-gray-100 dark:divide-gray-700/60"></tbody>
           </table>
@@ -345,6 +348,7 @@ const S = {
   lastFile: null,
   visStart: 0, visEnd: 50,
   colUniqueValues: {},
+  colTextFilters: {},
 };
 
 // ── Loading overlay ───────────────────────────────────────────────────────────
@@ -440,7 +444,7 @@ function parseFile(file) {
       }
 
       S.fileInfo.delim = delimLabel(res.meta.delimiter);
-      S.hiddenCols = new Set(); S.colFilters = {};
+      S.hiddenCols = new Set(); S.colFilters = {}; S.colTextFilters = {};
       S.query = ''; S.sortCol = -1; S.sortDir = null;
       S.page = 1; S.colWidths = {};
       S.selected = new Set();
@@ -511,6 +515,45 @@ function cacheUniqueValues() {
 }
 
 
+// ── Per-column text search row (in thead) ────────────────────────────────────
+function buildColSearchRow() {
+  const row = document.getElementById('theadSearch');
+  row.innerHTML = '';
+
+  // Empty cell for checkbox column
+  const emptyTh = document.createElement('th');
+  emptyTh.className = 'px-2 py-1 bg-white dark:bg-gray-800';
+  row.appendChild(emptyTh);
+  const seqTh3 = document.createElement('th');
+  seqTh3.className = 'px-2 py-1 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 w-10';
+  row.appendChild(seqTh3);
+
+  S.headers.forEach((h, i) => {
+    if (S.hiddenCols.has(i)) return;
+    const th = document.createElement('th');
+    th.className = 'px-2 py-1 bg-white dark:bg-gray-800';
+
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = 'Search…';
+    inp.value = S.colTextFilters[i] || '';
+    inp.className = 'w-full text-xs border border-gray-200 dark:border-gray-600 rounded px-2 py-1 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400';
+
+    let timer;
+    inp.addEventListener('input', () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const val = inp.value.trim().toLowerCase();
+        val ? S.colTextFilters[i] = val : delete S.colTextFilters[i];
+        S.page = 1; pipeline(); updateClearBtn();
+      }, 200);
+    });
+
+    th.appendChild(inp);
+    row.appendChild(th);
+  });
+}
+
 // ── Search ────────────────────────────────────────────────────────────────────
 let searchTimer;
 document.getElementById('searchInput').addEventListener('input', e => {
@@ -523,9 +566,10 @@ document.getElementById('rppSelect').addEventListener('change', e => { S.rpp = +
 
 // ── Clear filters ─────────────────────────────────────────────────────────────
 document.getElementById('btnClearFilters').addEventListener('click', () => {
-  S.query = ''; S.colFilters = {};
+  S.query = ''; S.colFilters = {}; S.colTextFilters = {};
   document.getElementById('searchInput').value = '';
   document.querySelectorAll('#theadFilters select').forEach(s => s.value = '');
+  document.querySelectorAll('#theadSearch input').forEach(inp => inp.value = '');
   S.page = 1; pipeline(); updateClearBtn();
 });
 function updateClearBtn() {
@@ -579,6 +623,9 @@ function pipeline() {
   }
   const fe = Object.entries(S.colFilters);
   if (fe.length) rows = rows.filter(row => fe.every(([ci, val]) => String(row[S.headers[+ci]] || '') === val));
+
+  const te = Object.entries(S.colTextFilters);
+  if (te.length) rows = rows.filter(row => te.every(([ci, txt]) => String(row[S.headers[+ci]] || '').toLowerCase().includes(txt)));
   S.filteredRows = rows;
 
   if (S.sortCol >= 0 && S.sortDir) {
@@ -617,6 +664,12 @@ function renderHead() {
   cbTh.appendChild(selectAll);
   tr.appendChild(cbTh);
 
+  // Sequence number column
+  const seqTh = document.createElement('th');
+  seqTh.className = 'px-2 py-3 text-center text-xs font-semibold text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-900 w-10 border-r border-gray-200 dark:border-gray-700';
+  seqTh.textContent = '#';
+  tr.appendChild(seqTh);
+
   // Data columns
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
@@ -640,6 +693,7 @@ function renderHead() {
   });
 
   buildColFilterDropdowns();
+  buildColSearchRow();
 }
 
 // ── Per-column filter dropdowns (in thead second row) ─────────────────────────
@@ -650,6 +704,9 @@ function buildColFilterDropdowns() {
   const emptyTh = document.createElement('th');
   emptyTh.className = 'px-2 py-1 bg-gray-50 dark:bg-gray-900';
   filterRow.appendChild(emptyTh);
+  const seqTh2 = document.createElement('th');
+  seqTh2.className = 'px-2 py-1 bg-gray-50 dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 w-10';
+  filterRow.appendChild(seqTh2);
 
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
@@ -698,7 +755,7 @@ function renderBody() {
   const tbody = document.getElementById('tbody');
   tbody.innerHTML = '';
   const total = S.sortedRows.length;
-  const colSpan = S.headers.filter((_, i) => !S.hiddenCols.has(i)).length + 1;
+  const colSpan = S.headers.filter((_, i) => !S.hiddenCols.has(i)).length + 2;
 
   if (!total) {
     const tr = document.createElement('tr');
@@ -765,11 +822,11 @@ function renderVisibleRows() {
   // Insert visible rows
   const frag = document.createDocumentFragment();
   const end = Math.min(S.visEnd, total);
-  for (let i = S.visStart; i < end; i++) frag.appendChild(createRow(S.sortedRows[i]));
+  for (let i = S.visStart; i < end; i++) frag.appendChild(createRow(S.sortedRows[i], i));
   tbody.insertBefore(frag, bot);
 }
 
-function createRow(row) {
+function createRow(row, idx) {
   const sel = S.selected.has(row.__rowId);
   const tr = document.createElement('tr');
   tr.className = sel ? 'row-selected' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors';
@@ -785,6 +842,12 @@ function createRow(row) {
     tr.className = cb.checked ? 'row-selected' : 'hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors';
   });
   cbTd.appendChild(cb); tr.appendChild(cbTd);
+
+  // Sequence number
+  const seqTd = document.createElement('td');
+  seqTd.className = 'px-2 py-2 text-xs text-gray-400 dark:text-gray-500 text-right select-none w-10 border-r border-gray-100 dark:border-gray-700';
+  seqTd.textContent = idx + 1;
+  tr.appendChild(seqTd);
 
   // Data cells
   S.headers.forEach((h, i) => {
