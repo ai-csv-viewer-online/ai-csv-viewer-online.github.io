@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSV vs TSV: What's the Difference and When to Use Each | AI CSV Viewer</title>
+  <meta name="description" content="CSV vs TSV — understand the difference between comma-separated and tab-separated formats, see real examples, and learn when to use each. Our tool auto-detects both.">
+  <link rel="canonical" href="https://ai-csv-viewer-online.github.io/blog/csv-vs-tsv.html">
+  <meta name="robots" content="index, follow">
+  <meta property="og:title" content="CSV vs TSV: What's the Difference and When to Use Each">
+  <meta property="og:description" content="Understand the CSV vs TSV difference with real examples. Learn when each format is used and how our tool auto-detects both.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://ai-csv-viewer-online.github.io/blog/csv-vs-tsv.html">
+  <meta property="og:site_name" content="AI CSV Viewer Online">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>tailwind.config = { darkMode: 'class' };</script>
+  <style>
+    body { font-family: system-ui, -apple-system, sans-serif; }
+    .prose h2 { font-size: 1.4rem; font-weight: 700; margin: 2.5rem 0 0.75rem; color: #1e1b4b; }
+    .prose h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.5rem; color: #312e81; }
+    .dark .prose h2 { color: #c7d2fe; }
+    .dark .prose h3 { color: #a5b4fc; }
+    .prose p { margin: 0.85rem 0; line-height: 1.8; color: #374151; }
+    .dark .prose p { color: #d1d5db; }
+    .prose ul, .prose ol { margin: 0.75rem 0 0.75rem 1.5rem; }
+    .prose ul { list-style: disc; }
+    .prose ol { list-style: decimal; }
+    .prose li { margin: 0.5rem 0; line-height: 1.75; color: #374151; }
+    .dark .prose li { color: #d1d5db; }
+    .prose a { color: #6366f1; text-decoration: underline; }
+    .prose strong { color: #1e1b4b; }
+    .dark .prose strong { color: #e0e7ff; }
+    .prose code { background: #f1f5f9; padding: 2px 6px; border-radius: 4px; font-size: 0.9em; color: #4338ca; }
+    .dark .prose code { background: #1e293b; color: #a5b4fc; }
+    .prose pre { background: #f1f5f9; padding: 1rem; border-radius: 8px; overflow-x: auto; margin: 1rem 0; font-size: 0.88rem; color: #1e293b; }
+    .dark .prose pre { background: #1e293b; color: #e2e8f0; }
+    table.comparison { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    table.comparison th { background: #4f46e5; color: white; padding: 10px 14px; text-align: left; font-size: 0.85rem; }
+    table.comparison td { padding: 9px 14px; border-bottom: 1px solid #e2e8f0; font-size: 0.9rem; color: #374151; }
+    table.comparison tr:nth-child(even) td { background: #f8faff; }
+    .dark table.comparison td { color: #d1d5db; border-bottom-color: #1f2937; }
+    .dark table.comparison tr:nth-child(even) td { background: #1e293b; }
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "CSV vs TSV: What's the Difference and When to Use Each",
+    "description": "Understand the difference between CSV and TSV file formats, with real examples, a comparison table, and guidance on when to use each.",
+    "author": { "@type": "Organization", "name": "AI CSV Viewer Online", "url": "https://ai-csv-viewer-online.github.io" },
+    "publisher": { "@type": "Organization", "name": "AI CSV Viewer Online", "url": "https://ai-csv-viewer-online.github.io" },
+    "datePublished": "2026-06-04",
+    "dateModified": "2026-06-04",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://ai-csv-viewer-online.github.io/blog/csv-vs-tsv.html" }
+  }
+  </script>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen">
+
+  <header class="bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 shadow-lg">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="text-white font-bold text-lg tracking-tight">⚡ AI CSV Viewer Online</a>
+      <nav class="flex items-center gap-4 text-sm text-indigo-200">
+        <a href="/" class="hover:text-white transition-colors">Home</a>
+        <a href="/blog/" class="hover:text-white transition-colors text-white">Blog</a>
+        <a href="/about.html" class="hover:text-white transition-colors">About</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 py-10">
+
+    <nav class="text-sm text-gray-400 mb-6">
+      <a href="/" class="hover:text-indigo-600">Home</a> /
+      <a href="/blog/" class="hover:text-indigo-600">Blog</a> /
+      <span class="text-gray-600 dark:text-gray-300">CSV vs TSV</span>
+    </nav>
+
+    <header class="mb-8">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white leading-tight mb-4">
+        CSV vs TSV: What's the Difference and When to Use Each
+      </h1>
+      <div class="flex flex-wrap items-center gap-4 text-sm text-gray-400">
+        <span>📅 June 4, 2026</span>
+        <span>⏱ 6 min read</span>
+        <span>🏷 CSV, TSV, File Formats</span>
+      </div>
+    </header>
+
+    <!-- CTA -->
+    <div class="bg-gradient-to-r from-indigo-600 to-violet-600 text-white rounded-2xl p-6 mb-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div>
+        <p class="font-bold text-lg">View CSV &amp; TSV Files Online — Free</p>
+        <p class="text-indigo-200 text-sm">Auto-detects both formats. No upload, no signup, works instantly.</p>
+      </div>
+      <a href="/" class="flex-shrink-0 px-6 py-2.5 bg-white text-indigo-700 font-semibold rounded-xl hover:bg-indigo-50 transition-colors">
+        Open Viewer →
+      </a>
+    </div>
+
+    <article class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 p-8 prose max-w-none">
+
+      <p>
+        If you work with data exports, you've almost certainly encountered both <strong>CSV</strong> and
+        <strong>TSV</strong> files. At a glance they look similar — plain text, one record per line —
+        but the choice of delimiter between them makes a significant practical difference depending on
+        what kind of data you're working with.
+      </p>
+      <p>
+        This guide explains the <strong>CSV vs TSV</strong> distinction clearly, shows real examples of
+        each format, and gives you a framework for deciding which to use — or request — when exporting data.
+      </p>
+
+      <h2>What Is a CSV File?</h2>
+      <p>
+        CSV stands for <strong>Comma-Separated Values</strong>. It is the most widely used plain-text
+        format for tabular data. Each line represents one row, and fields within that row are separated
+        by commas.
+      </p>
+      <p>A simple CSV file looks like this:</p>
+      <pre>name,email,country
+Alice Johnson,alice@example.com,United States
+Bob Smith,bob@example.com,United Kingdom
+Carlos Diaz,carlos@example.com,Mexico</pre>
+      <p>
+        When a field value itself contains a comma, the standard solution is to wrap that field in
+        double quotes:
+      </p>
+      <pre>name,address,city
+Alice Johnson,"123 Main St, Suite 4",Austin</pre>
+      <p>
+        This quoting requirement is defined by <strong>RFC 4180</strong>, the informal CSV standard.
+        Most well-written CSV parsers handle this correctly, but poorly written exporters sometimes
+        skip the quoting, resulting in broken files.
+      </p>
+
+      <h2>What Is a TSV File?</h2>
+      <p>
+        TSV stands for <strong>Tab-Separated Values</strong>. It uses the tab character (<code>\t</code>,
+        ASCII 0x09) as the delimiter instead of a comma. The same data as above in TSV format:
+      </p>
+      <pre>name	email	country
+Alice Johnson	alice@example.com	United States
+Bob Smith	bob@example.com	United Kingdom
+Carlos Diaz	carlos@example.com	Mexico</pre>
+      <p>
+        Because tab characters are rarely found in natural text or structured data values, TSV files
+        generally do not need quoting or escaping. An address containing a comma is just a plain string —
+        no special handling required.
+      </p>
+
+      <h2>CSV vs TSV: Side-by-Side Comparison</h2>
+
+      <table class="comparison">
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>CSV</th>
+            <th>TSV</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Delimiter character</td><td>Comma <code>,</code></td><td>Tab <code>\t</code></td></tr>
+          <tr><td>File extension</td><td><code>.csv</code></td><td><code>.tsv</code> or <code>.txt</code></td></tr>
+          <tr><td>Quoting required for values with commas</td><td>Yes</td><td>No</td></tr>
+          <tr><td>Quoting required for values with tabs</td><td>No</td><td>Yes (rare in practice)</td></tr>
+          <tr><td>Human readability in text editor</td><td>Good</td><td>Better (aligned columns)</td></tr>
+          <tr><td>Excel default import support</td><td>Yes (auto)</td><td>Yes (with Text Import Wizard)</td></tr>
+          <tr><td>Common in web APIs</td><td>Very common</td><td>Less common</td></tr>
+          <tr><td>Common in bioinformatics / scientific data</td><td>Less common</td><td>Very common</td></tr>
+          <tr><td>Parsing complexity</td><td>Higher (quoting rules)</td><td>Lower (rarely need quoting)</td></tr>
+        </tbody>
+      </table>
+
+      <h2>When to Use CSV</h2>
+      <p>
+        CSV is the better choice in most general-purpose data exchange scenarios:
+      </p>
+      <ul>
+        <li><strong>Web APIs and SaaS exports</strong> — Salesforce, HubSpot, Mailchimp, Shopify, and
+          virtually every SaaS product defaults to CSV for data exports.</li>
+        <li><strong>Spreadsheet exchange</strong> — CSV opens directly in Excel and Google Sheets
+          without any import wizard.</li>
+        <li><strong>Simple structured data</strong> — product catalogs, contact lists, order history,
+          transaction records — fields that rarely contain commas.</li>
+        <li><strong>Cross-platform portability</strong> — CSV is supported by every data tool, database,
+          and programming language as a first-class format.</li>
+      </ul>
+
+      <h2>When to Use TSV</h2>
+      <p>
+        TSV has specific advantages in certain contexts:
+      </p>
+      <ul>
+        <li><strong>Free-text fields</strong> — if your data includes addresses, descriptions, notes, or
+          any text that commonly contains commas, TSV avoids the quoting complexity entirely.</li>
+        <li><strong>Bioinformatics and genomics</strong> — tools like BLAST, bedtools, and GTF/GFF annotation
+          files use tab-separated formats as a standard convention.</li>
+        <li><strong>Database dumps</strong> — PostgreSQL's <code>COPY</code> command defaults to TSV
+          for its text-format export because the tab delimiter is less likely to appear in data values.</li>
+        <li><strong>Log file analysis</strong> — many server logs, ad platform reports, and analytics
+          exports use TSV because it is easier to parse with simple <code>split('\t')</code> in scripts.</li>
+      </ul>
+
+      <h2>A Common Pitfall: Commas in CSV Values</h2>
+      <p>
+        The single biggest source of broken CSV files is unquoted commas in data values. Consider a
+        product description field containing: <em>"Strong, durable, waterproof."</em> An exporter that
+        doesn't quote this field produces:
+      </p>
+      <pre>product_id,description,price
+101,Strong, durable, waterproof.,29.99</pre>
+      <p>
+        A naive parser sees five columns instead of three on that second row — a silent data corruption
+        that can cause import failures or wrong data downstream. Proper CSV requires:
+      </p>
+      <pre>product_id,description,price
+101,"Strong, durable, waterproof.",29.99</pre>
+      <p>
+        TSV completely sidesteps this issue because the comma in the description is just a regular character
+        — no quoting needed.
+      </p>
+
+      <h2>How AI CSV Viewer Online Auto-Detects Both Formats</h2>
+      <p>
+        You don't need to tell our tool whether your file is CSV or TSV. When you drop a file, the
+        parser samples the first few lines and counts the frequency of candidate delimiters:
+        comma, tab, semicolon, and pipe. The delimiter with the most consistent count across rows wins.
+      </p>
+      <p>
+        This means <code>.csv</code> files that are actually semicolon-delimited (common in European
+        Excel exports), <code>.txt</code> files that are tab-separated, and true <code>.tsv</code> files
+        all load correctly without any configuration step on your part.
+      </p>
+      <p>
+        Once loaded, every file is displayed the same way: a clean, sortable, filterable table with
+        column search and export options.
+      </p>
+
+      <h2>How to Convert Between CSV and TSV</h2>
+      <p>
+        Need to switch formats? The simplest approach on the command line:
+      </p>
+      <pre># Convert CSV to TSV
+sed 's/,/\t/g' input.csv > output.tsv
+
+# Convert TSV to CSV
+sed 's/\t/,/g' input.tsv > output.csv</pre>
+      <p>
+        Note: these simple substitutions only work cleanly when your CSV values don't contain commas.
+        For production use, use a proper CSV library (<code>csv</code> in Python, Papa Parse in JavaScript)
+        that handles quoting and escaping correctly.
+      </p>
+
+      <h2>Conclusion</h2>
+      <p>
+        The <strong>CSV vs TSV</strong> decision comes down to your data. Use CSV when you need maximum
+        compatibility with spreadsheet apps and web platforms. Use TSV when your data contains lots of
+        free text with commas, or when you're working in a scientific or database context where tab
+        separation is the convention.
+      </p>
+      <p>
+        Either way, AI CSV Viewer Online handles both formats automatically. Drop your file — whether
+        it's <code>.csv</code>, <code>.tsv</code>, or a pipe-delimited <code>.txt</code> — and the
+        viewer will parse it correctly and display it as a clean, interactive table.
+      </p>
+
+    </article>
+
+    <section class="mt-10">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200 mb-5">Related Articles</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <a href="/blog/csv-viewer-online.html" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-indigo-300 transition-colors">
+          <p class="font-semibold text-gray-800 dark:text-gray-200 mb-1">CSV Viewer Online — Free, Fast & Private</p>
+          <p class="text-sm text-gray-400">The complete guide to viewing CSV files in your browser.</p>
+        </a>
+        <a href="/blog/view-large-csv-files.html" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-indigo-300 transition-colors">
+          <p class="font-semibold text-gray-800 dark:text-gray-200 mb-1">How to View Large CSV Files</p>
+          <p class="text-sm text-gray-400">Handle 50,000+ rows without Excel crashing.</p>
+        </a>
+        <a href="/blog/filter-csv-data.html" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-indigo-300 transition-colors">
+          <p class="font-semibold text-gray-800 dark:text-gray-200 mb-1">How to Filter CSV Data Online</p>
+          <p class="text-sm text-gray-400">Global search, dropdowns, column filters — no Excel needed.</p>
+        </a>
+        <a href="/blog/open-csv-file-online.html" class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5 hover:border-indigo-300 transition-colors">
+          <p class="font-semibold text-gray-800 dark:text-gray-200 mb-1">How to Open a CSV File Online</p>
+          <p class="text-sm text-gray-400">Step-by-step guide to viewing CSV files in your browser.</p>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="mt-12 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+    <div class="max-w-4xl mx-auto px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-400 dark:text-gray-500">
+      <p>© 2026 AI CSV Viewer Online. Free, private, browser-based CSV viewer.</p>
+      <div class="flex gap-4">
+        <a href="/" class="hover:text-indigo-600">Home</a>
+        <a href="/privacy.html" class="hover:text-indigo-600">Privacy</a>
+        <a href="/terms.html" class="hover:text-indigo-600">Terms</a>
+        <a href="/about.html" class="hover:text-indigo-600">About</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
+
