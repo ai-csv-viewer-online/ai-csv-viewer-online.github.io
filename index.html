@@ -136,15 +136,7 @@
           Browse File
         </button>
         <input type="file" id="fileInput" accept=".csv,.tsv,.txt" class="hidden">
-        <!-- Has-header toggle -->
-        <div class="mt-3 flex items-center justify-center gap-2">
-          <input type="checkbox" id="hasHeadersUpload" checked
-            class="w-4 h-4 rounded cursor-pointer accent-indigo-600">
-          <label for="hasHeadersUpload" class="text-xs text-gray-500 dark:text-gray-400 cursor-pointer select-none">
-            First row is a header row
-          </label>
-        </div>
-        <p class="text-xs text-gray-400 dark:text-gray-600 mt-2">🔒 Your data never leaves your browser</p>
+        <p class="text-xs text-gray-400 dark:text-gray-600 mt-3">🔒 Your data never leaves your browser</p>
       </div>
 
       <!-- Ad banner after drop zone -->
@@ -217,10 +209,7 @@
         <span class="text-xs text-indigo-200 hidden md:inline flex-shrink-0">
           Delim: <code id="metaDelim" class="bg-white/15 px-1 py-0.5 rounded font-mono text-xs text-white"></code>
         </span>
-        <label class="flex items-center gap-1 text-xs text-indigo-200 cursor-pointer select-none flex-shrink-0">
-          <input type="checkbox" id="hasHeadersMeta" checked class="rounded cursor-pointer accent-violet-400">
-          Has headers
-        </label>
+        <span id="metaHeadersBadge" class="hidden md:inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0"></span>
         <div class="w-px h-4 bg-white/30 flex-shrink-0"></div>
 
         <!-- Search -->
@@ -397,17 +386,51 @@ function toggleDark() {
 document.getElementById('darkToggle').addEventListener('click', toggleDark);
 document.getElementById('darkToggle2').addEventListener('click', toggleDark);
 
-// ── Has-headers checkboxes ────────────────────────────────────────────────────
-document.getElementById('hasHeadersUpload').addEventListener('change', e => {
-  S.hasHeaders = e.target.checked;
-  document.getElementById('hasHeadersMeta').checked = e.target.checked;
-});
+// ── Auto-detect whether first row is a header ─────────────────────────────────
+function autoDetectHeaders(rows) {
+  if (!rows || !rows.length || !rows[0]) return true;
+  const first = rows[0];
+  const nonEmpty = first.filter(v => String(v).trim() !== '');
+  if (!nonEmpty.length) return true;
 
-document.getElementById('hasHeadersMeta').addEventListener('change', e => {
-  S.hasHeaders = e.target.checked;
-  document.getElementById('hasHeadersUpload').checked = e.target.checked;
-  if (S.lastFile) parseFile(S.lastFile);
-});
+  // Rule 1: all cells are numeric → data row
+  const allNumeric = nonEmpty.every(v => !isNaN(Number(String(v).trim())));
+  if (allNumeric) return false;
+
+  // Rule 2: any cell looks like typical data values (dates, emails, IPs, times)
+  const dataPatterns = [
+    /^\d{1,2}\/\d{1,2}\/\d{2,4}/,          // date MM/DD/YYYY
+    /^\d{4}-\d{2}-\d{2}/,                   // date YYYY-MM-DD
+    /\d{1,2}:\d{2}(:\d{2})?(\s*(AM|PM))?/i, // time HH:MM or HH:MM AM/PM
+    /^[\w.+-]+@[\w-]+\.[a-z]{2,}$/i,         // email address
+    /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/,  // IP address
+    /^\+?[\d\s\-().]{7,}$/,                  // phone number
+  ];
+  const hasDataCell = nonEmpty.some(v =>
+    dataPatterns.some(re => re.test(String(v).trim()))
+  );
+  if (hasDataCell) return false;
+
+  // Rule 3: compare first row to second row — if they share the same
+  // pattern (both have emails, both have dates, etc.) → first row is data
+  if (rows.length > 1) {
+    const second = rows[1].filter(v => String(v).trim() !== '');
+    const firstTypes  = nonEmpty.map(v => cellType(String(v).trim()));
+    const secondTypes = second.map(v => cellType(String(v).trim()));
+    const matchCount  = firstTypes.filter((t, i) => t === secondTypes[i] && t !== 'text').length;
+    if (matchCount >= Math.floor(nonEmpty.length * 0.5)) return false;
+  }
+
+  return true; // default: has headers
+}
+
+function cellType(v) {
+  if (!isNaN(Number(v))) return 'number';
+  if (/^\d{1,2}\/\d{1,2}\/\d{2,4}/.test(v) || /^\d{4}-\d{2}-\d{2}/.test(v)) return 'date';
+  if (/^[\w.+-]+@[\w-]+\.[a-z]{2,}$/i.test(v)) return 'email';
+  if (/\d{1,2}:\d{2}/i.test(v)) return 'time';
+  return 'text';
+}
 
 // ── File upload ───────────────────────────────────────────────────────────────
 const dropZone = document.getElementById('dropZone');
@@ -437,7 +460,7 @@ function parseFile(file) {
   showLoader(file.name);
 
   Papa.parse(file, {
-    header: S.hasHeaders,
+    header: false,          // always parse as raw arrays so we can auto-detect
     skipEmptyLines: true,
     dynamicTyping: false,
     encoding: 'UTF-8',
@@ -445,10 +468,19 @@ function parseFile(file) {
       hideLoader();
       if (!res.data || !res.data.length) { toast('File is empty or could not be parsed.', 1); return; }
 
-      if (S.hasHeaders) {
-        S.headers = res.meta.fields || [];
-        S.allRows = res.data.map((row, i) => Object.assign({ __rowId: i }, row));
+      const hasHdr = autoDetectHeaders(res.data);
+      S.fileInfo.hasHeaders = hasHdr;
+
+      if (hasHdr) {
+        // First row = headers
+        S.headers = res.data[0].map((v, i) => String(v).trim() || `Column ${i + 1}`);
+        S.allRows = res.data.slice(1).map((arr, i) => {
+          const obj = { __rowId: i };
+          S.headers.forEach((h, ci) => { obj[h] = arr[ci] ?? ''; });
+          return obj;
+        });
       } else {
+        // No headers — generate Column 1, Column 2, ...
         const cols = res.data[0] ? res.data[0].length : 0;
         S.headers = Array.from({ length: cols }, (_, i) => `Column ${i + 1}`);
         S.allRows = res.data.map((arr, i) => {
@@ -464,8 +496,6 @@ function parseFile(file) {
       S.page = 1; S.colWidths = {};
       S.selected = new Set();
       document.getElementById('searchInput').value = '';
-      document.getElementById('hasHeadersMeta').checked = S.hasHeaders;
-
 
       initViewer();
     },
@@ -492,6 +522,14 @@ function initViewer() {
   document.getElementById('metaRows').textContent = S.allRows.length.toLocaleString();
   document.getElementById('metaCols').textContent = S.headers.length;
   document.getElementById('metaDelim').textContent = S.fileInfo.delim;
+  const badge = document.getElementById('metaHeadersBadge');
+  if (S.fileInfo.hasHeaders) {
+    badge.textContent = '✓ Headers detected';
+    badge.className = 'hidden md:inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 bg-emerald-500/30 text-emerald-200';
+  } else {
+    badge.textContent = '⚠ No headers — auto-named';
+    badge.className = 'hidden md:inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 bg-amber-500/30 text-amber-200';
+  }
   buildColVisMenu();
   cacheUniqueValues();
   pipeline();
