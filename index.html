@@ -604,6 +604,16 @@ function cacheUniqueValues() {
 // ── Per-column text search row (in thead) ────────────────────────────────────
 function buildColSearchRow() {
   const row = document.getElementById('theadSearch');
+
+  // Save focused input state before destroying the row
+  const active = document.activeElement;
+  let savedCol = null, savedStart = 0, savedEnd = 0;
+  if (active && row.contains(active)) {
+    savedCol = active.dataset.col;
+    savedStart = active.selectionStart || 0;
+    savedEnd = active.selectionEnd || 0;
+  }
+
   row.innerHTML = '';
 
   // Empty cell for checkbox column
@@ -623,6 +633,7 @@ function buildColSearchRow() {
     inp.type = 'text';
     inp.placeholder = 'Search…';
     inp.value = S.colTextFilters[i] || '';
+    inp.dataset.col = i;
     inp.className = 'w-full text-xs border border-gray-200 dark:border-gray-600 rounded px-2 py-1 bg-gray-50 dark:bg-gray-700 dark:text-gray-200 placeholder-gray-300 dark:placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-indigo-400';
 
     let timer;
@@ -638,6 +649,15 @@ function buildColSearchRow() {
     th.appendChild(inp);
     row.appendChild(th);
   });
+
+  // Restore focus to the same column input after rebuild
+  if (savedCol !== null) {
+    const target = row.querySelector(`input[data-col="${savedCol}"]`);
+    if (target) {
+      target.focus();
+      try { target.setSelectionRange(savedStart, savedEnd); } catch(e) {}
+    }
+  }
 }
 
 // Global search removed — use per-column search rows in thead
