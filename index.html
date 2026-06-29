@@ -802,6 +802,23 @@ function pipeline() {
 }
 
 // ── Freeze helpers ────────────────────────────────────────────────────────────
+function autoFitColWidth(colIdx) {
+  const h = S.headers[colIdx];
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.font = '13px system-ui, -apple-system, sans-serif'; // matches text-sm
+  // Measure header label
+  let maxW = ctx.measureText(h || `Col ${colIdx + 1}`).width + 56; // + padding + pin btn
+  // Sample up to 500 rows for performance
+  const sample = S.sortedRows.length > 500 ? S.sortedRows.slice(0, 500) : S.sortedRows;
+  sample.forEach(row => {
+    const val = row[h] != null ? String(row[h]) : '';
+    const w = ctx.measureText(val).width + 28; // + cell padding
+    if (w > maxW) maxW = w;
+  });
+  S.colWidths[colIdx] = Math.min(Math.ceil(maxW), 380); // cap at 380px
+}
+
 function getFrozenLeft(colIdx) {
   let left = 80; // 40px checkbox + 40px seq
   S.headers.forEach((_, i) => {
@@ -875,7 +892,12 @@ function renderHead() {
     pinBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.168.276-.241.548-.428.752-.555L5 6.577V2.377a2.2 2.2 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
     pinBtn.addEventListener('click', e => {
       e.stopPropagation();
-      frozen ? S.frozenCols.delete(i) : S.frozenCols.add(i);
+      if (frozen) {
+        S.frozenCols.delete(i);
+      } else {
+        autoFitColWidth(i);
+        S.frozenCols.add(i);
+      }
       render();
     });
     th.appendChild(pinBtn);
