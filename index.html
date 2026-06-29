@@ -77,7 +77,21 @@
     #theadSearch th { border-right: 1px solid #ddd6fe; }
     #theadSearch th:last-child { border-right: none; }
     .dark #theadSearch th { border-right-color: #3b0764; }
-.row-selected { background-color: #eef2ff !important; }
+/* Freeze columns */
+    .frozen-th { position: sticky !important; z-index: 15 !important; }
+    .frozen-td { position: sticky !important; z-index: 3 !important; background-color: #ffffff; }
+    .dark .frozen-td { background-color: #1f2937; }
+    tr:nth-child(odd) .frozen-td { background-color: #f5f8ff; }
+    .dark tr:nth-child(odd) .frozen-td { background-color: #1e2238; }
+    tr.row-selected .frozen-td { background-color: #eef2ff !important; }
+    .dark tr.row-selected .frozen-td { background-color: rgba(99,102,241,0.2) !important; }
+    .frozen-last-col { box-shadow: 3px 0 8px -2px rgba(99,102,241,0.5); }
+    .dark .frozen-last-col { box-shadow: 3px 0 8px -2px rgba(99,102,241,0.35); }
+    .freeze-pin-btn { opacity: 0; transition: opacity 0.15s, color 0.15s; }
+    .freeze-pin-btn.frozen { opacity: 1 !important; color: #93c5fd; }
+    th:hover .freeze-pin-btn { opacity: 0.5; }
+    th:hover .freeze-pin-btn.frozen { opacity: 1; }
+    .row-selected { background-color: #eef2ff !important; }
     .dark .row-selected { background-color: rgba(99,102,241,0.15) !important; }
     #seqActionCell { background-color: #ffffff !important; border-right: 1px solid #e2e8f0; }
     .dark #seqActionCell { background-color: #1f2937 !important; border-right-color: #374151; }
@@ -338,6 +352,7 @@ const S = {
   visStart: 0, visEnd: 50,
   colUniqueValues: {},
   colTextFilters: {},
+  frozenCols: new Set(),
 };
 
 // ── Loading overlay ───────────────────────────────────────────────────────────
@@ -480,7 +495,7 @@ function parseFile(file) {
       }
 
       S.fileInfo.delim = delimLabel(res.meta.delimiter);
-      S.hiddenCols = new Set(); S.colFilters = {}; S.colTextFilters = {};
+      S.hiddenCols = new Set(); S.colFilters = {}; S.colTextFilters = {}; S.frozenCols = new Set();
       S.sortCol = -1; S.sortDir = null;
       S.page = 1; S.colWidths = {};
       S.selected = new Set();
@@ -576,8 +591,14 @@ function buildColSearchRow() {
 
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
+    const frozen = S.frozenCols.has(i);
     const th = document.createElement('th');
     th.className = 'px-2 py-1.5 bg-violet-50 dark:bg-violet-950/30';
+    if (frozen) {
+      th.style.left = getFrozenLeft(i) + 'px';
+      th.classList.add('frozen-th');
+      if (isFrozenLast(i)) th.classList.add('frozen-last-col');
+    }
 
     const inp = document.createElement('input');
     inp.type = 'text';
@@ -752,6 +773,23 @@ function pipeline() {
   render();
 }
 
+// ── Freeze helpers ────────────────────────────────────────────────────────────
+function getFrozenLeft(colIdx) {
+  let left = 80; // 40px checkbox + 40px seq
+  S.headers.forEach((_, i) => {
+    if (!S.hiddenCols.has(i) && S.frozenCols.has(i) && i < colIdx)
+      left += (S.colWidths[i] || 80);
+  });
+  return left;
+}
+function isFrozenLast(colIdx) {
+  let last = -1;
+  S.headers.forEach((_, i) => {
+    if (!S.hiddenCols.has(i) && S.frozenCols.has(i)) last = i;
+  });
+  return last === colIdx;
+}
+
 // ── Render ────────────────────────────────────────────────────────────────────
 function render() { renderHead(); renderBody(); renderPagination(); renderSummary(); }
 
@@ -783,18 +821,36 @@ function renderHead() {
   // Data columns
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
+    const frozen = S.frozenCols.has(i);
     const th = document.createElement('th');
     th.className = 'px-3 py-3 text-left text-xs font-semibold text-indigo-100 uppercase tracking-wider bg-indigo-700 dark:bg-indigo-900 cursor-pointer hover:bg-indigo-600 dark:hover:bg-indigo-800 whitespace-nowrap';
     if (S.colWidths[i]) th.style.minWidth = S.colWidths[i] + 'px';
     else th.style.minWidth = '80px';
+    if (frozen) {
+      th.style.left = getFrozenLeft(i) + 'px';
+      th.classList.add('frozen-th');
+      if (isFrozenLast(i)) th.classList.add('frozen-last-col');
+    }
     let arrow = '⇅';
     if (S.sortCol === i) { arrow = S.sortDir === 'asc' ? '↑' : '↓'; th.classList.add('text-yellow-300'); }
     th.innerHTML = `<span class="inline-block truncate align-middle max-w-xs">${esc(h || `Col ${i + 1}`)}</span><span class="ml-1 text-gray-300 dark:text-gray-600 text-xs">${arrow}</span>`;
     th.addEventListener('click', e => {
-      if (e.target.classList.contains('resize-handle')) return;
+      if (e.target.classList.contains('resize-handle') || e.target.closest('.freeze-pin-btn')) return;
       S.sortCol === i ? (S.sortDir = S.sortDir === 'asc' ? 'desc' : 'asc') : (S.sortCol = i, S.sortDir = 'asc');
       S.page = 1; pipeline();
     });
+    // Pin button
+    const pinBtn = document.createElement('button');
+    pinBtn.className = 'freeze-pin-btn' + (frozen ? ' frozen' : '');
+    pinBtn.title = frozen ? 'Unfreeze column' : 'Freeze column';
+    pinBtn.style.cssText = 'position:absolute;top:50%;right:20px;transform:translateY(-50%);padding:2px;border-radius:3px;line-height:0;';
+    pinBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.168.276-.241.548-.428.752-.555L5 6.577V2.377a2.2 2.2 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
+    pinBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      frozen ? S.frozenCols.delete(i) : S.frozenCols.add(i);
+      render();
+    });
+    th.appendChild(pinBtn);
     const handle = document.createElement('div');
     handle.className = 'resize-handle';
     handle.addEventListener('mousedown', makeResizer(th, i));
@@ -820,8 +876,14 @@ function buildColFilterDropdowns() {
 
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
+    const frozen = S.frozenCols.has(i);
     const th = document.createElement('th');
     th.className = 'px-2 py-1.5 bg-indigo-50 dark:bg-indigo-950/50';
+    if (frozen) {
+      th.style.left = getFrozenLeft(i) + 'px';
+      th.classList.add('frozen-th');
+      if (isFrozenLast(i)) th.classList.add('frozen-last-col');
+    }
 
     const sel = document.createElement('select');
     sel.className = 'w-full text-xs border border-gray-200 dark:border-gray-600 rounded px-1.5 py-1 bg-white dark:bg-gray-700 dark:text-gray-200 focus:outline-none focus:ring-1 focus:ring-indigo-400 min-w-0';
@@ -965,8 +1027,14 @@ function createRow(row, idx) {
   // Data cells
   S.headers.forEach((h, i) => {
     if (S.hiddenCols.has(i)) return;
+    const frozen = S.frozenCols.has(i);
     const td = document.createElement('td');
     td.className = 'px-3 py-2 text-sm text-gray-700 dark:text-gray-300';
+    if (frozen) {
+      td.style.left = getFrozenLeft(i) + 'px';
+      td.classList.add('frozen-td');
+      if (isFrozenLast(i)) td.classList.add('frozen-last-col');
+    }
     const val = row[h] != null ? String(row[h]) : '';
     td.textContent = val; td.title = val;
     tr.appendChild(td);
