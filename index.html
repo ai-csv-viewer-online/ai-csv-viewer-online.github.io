@@ -81,35 +81,43 @@
     .frozen-th {
       position: sticky !important;
       z-index: 15 !important;
-      background-color: #3730a3 !important; /* indigo-800 — slightly darker than normal header */
-      border-right: 2px solid #6366f1 !important;
+      background-color: #1e1b4b !important;
+      border-right: 2px solid #fbbf24 !important; /* amber — matches pin icon */
+      border-bottom: 2px solid #fbbf24 !important;
     }
     .dark .frozen-th {
-      background-color: #1e1b4b !important; /* deep indigo for dark mode */
-      border-right-color: #4f46e5 !important;
+      background-color: #0f0c29 !important;
+      border-right-color: #f59e0b !important;
+      border-bottom-color: #f59e0b !important;
     }
     .frozen-td {
       position: sticky !important;
       z-index: 3 !important;
-      background-color: #eef2ff !important; /* indigo-50 */
-      border-right: 2px solid #c7d2fe !important; /* indigo-200 */
+      background-color: #ede9fe !important; /* violet-100 — clearly tinted */
+      border-right: 2px solid #fbbf24 !important; /* amber boundary */
     }
     .dark .frozen-td {
-      background-color: #1e1b4b !important; /* deep indigo */
-      border-right-color: #3730a3 !important;
+      background-color: #1a1040 !important;
+      border-right-color: #f59e0b !important;
     }
-    tr:nth-child(even) .frozen-td { background-color: #e0e7ff !important; } /* indigo-100 for even rows */
-    .dark tr:nth-child(even) .frozen-td { background-color: #1e2060 !important; }
-    tr.row-selected .frozen-td { background-color: #c7d2fe !important; } /* indigo-200 selected */
-    .dark tr.row-selected .frozen-td { background-color: rgba(99,102,241,0.35) !important; }
-    tr:hover .frozen-td { background-color: #dde5ff !important; }
-    .dark tr:hover .frozen-td { background-color: #252570 !important; }
-    .frozen-last-col { box-shadow: 4px 0 10px -1px rgba(79,70,229,0.4), 2px 0 4px -1px rgba(79,70,229,0.2) !important; }
-    .dark .frozen-last-col { box-shadow: 4px 0 10px -1px rgba(99,102,241,0.5), 2px 0 4px -1px rgba(99,102,241,0.3) !important; }
+    tr:nth-child(even) .frozen-td { background-color: #ddd6fe !important; } /* violet-200 */
+    .dark tr:nth-child(even) .frozen-td { background-color: #150d38 !important; }
+    tr.row-selected .frozen-td { background-color: #c4b5fd !important; }
+    .dark tr.row-selected .frozen-td { background-color: rgba(139,92,246,0.4) !important; }
+    tr:hover .frozen-td { filter: brightness(0.96); }
+    /* Freeze boundary shadow — strong right-side separator */
+    .frozen-last-col,
+    .frozen-last-col.frozen-td {
+      box-shadow: 6px 0 16px -2px rgba(251,191,36,0.35), 3px 0 6px -1px rgba(79,70,229,0.4) !important;
+    }
+    .dark .frozen-last-col,
+    .dark .frozen-last-col.frozen-td {
+      box-shadow: 6px 0 16px -2px rgba(245,158,11,0.4), 3px 0 6px -1px rgba(99,102,241,0.5) !important;
+    }
     /* Pin button */
     .freeze-pin-btn { opacity: 0; transition: opacity 0.15s, color 0.15s; color: #a5b4fc; }
-    .freeze-pin-btn.frozen { opacity: 1 !important; color: #fbbf24; } /* amber when pinned */
-    th:hover .freeze-pin-btn { opacity: 0.6; }
+    .freeze-pin-btn.frozen { opacity: 1 !important; color: #fbbf24; }
+    th:hover .freeze-pin-btn { opacity: 0.65; }
     th:hover .freeze-pin-btn.frozen { opacity: 1; }
     .row-selected { background-color: #eef2ff !important; }
     .dark .row-selected { background-color: rgba(99,102,241,0.15) !important; }
@@ -864,7 +872,7 @@ function renderHead() {
     pinBtn.className = 'freeze-pin-btn' + (frozen ? ' frozen' : '');
     pinBtn.title = frozen ? 'Unfreeze column' : 'Freeze column';
     pinBtn.style.cssText = 'position:absolute;top:50%;right:6px;transform:translateY(-50%);padding:2px;border-radius:3px;line-height:0;background:transparent;border:none;cursor:pointer;';
-    pinBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" fill="currentColor" viewBox="0 0 16 16"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.168.276-.241.548-.428.752-.555L5 6.577V2.377a2.2 2.2 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
+    pinBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M4.146.146A.5.5 0 0 1 4.5 0h7a.5.5 0 0 1 .5.5c0 .68-.342 1.174-.646 1.479-.126.125-.25.224-.354.298v4.431l.078.048c.203.127.476.314.751.555C12.36 7.775 13 8.527 13 9.5a.5.5 0 0 1-.5.5h-4v4.5c0 .276-.224 1.5-.5 1.5s-.5-1.224-.5-1.5V10h-4a.5.5 0 0 1-.5-.5c0-.973.64-1.725 1.17-2.168.276-.241.548-.428.752-.555L5 6.577V2.377a2.2 2.2 0 0 1-.354-.298C4.342 1.674 4 1.179 4 .5a.5.5 0 0 1 .146-.354z"/></svg>`;
     pinBtn.addEventListener('click', e => {
       e.stopPropagation();
       frozen ? S.frozenCols.delete(i) : S.frozenCols.add(i);
